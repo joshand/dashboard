@@ -5,6 +5,7 @@
 .dbutton { width: 40px; height: 40px; border: 1px solid gray; }
 .dblank { width: 20px; height: 40px; border: none; }
 .dragged { width: 90px; height: 80px; border: none; }
+.dstatus { width: 100px; height: 40px; } 
 #frame { height: 800px; border: black 1px solid;}
 
 .origin-point {
@@ -190,6 +191,27 @@
                                         </div><!-- /.box -->
                                 </div>
                         </td>
+                        <td>
+                                <div id="hidden6" class="drag">
+                                        <div class="box box-warning" style="width:225px">
+                                                <div class="box-header with-border">
+                                                        <div class="row">
+                                                          <div class="col-md-9">
+                                                            <h3 class="box-title"><i class="fa fa-sort-amount-asc"></i>&nbsp;Call Queue</h3>
+                                                          </div>
+                                                          <div class="col-md-1"><div class="drop-point">&nbsp;</div></div>
+                                                        </div>
+                                                </div>
+                                                <div class="box-body">
+                                                        <div class="row">
+                                                                <div class="col-md-12" data-tooltip="Enter the name of the Call Queue.">
+                                                                  <input id="textbox" class="form-control" type="text" placeholder="Call Queue">
+                                                                </div>
+                                                        </div>
+                                                </div><!-- /.box-body -->
+                                        </div><!-- /.box -->
+                                </div>
+                        </td>
                 </tr>
         </table>
 </div>
@@ -249,6 +271,22 @@
 					<i class="glyphicon glyphicon-th"></i>
 				</div>
 			</td>
+                        <td>
+                                <div id="drag6" class="drag">
+                                        <i class="fa fa-sort-amount-asc"></i>
+                                </div>
+                        </td>
+
+                        <td>
+                                <div class="dblank">
+                                        &nbsp;
+                                </div>
+                        </td>
+			<td>
+				<div id="appstatus" class="dstatus">
+					<i>Not Saved</i><br>&nbsp;
+				</div>
+			</td>
 		</tr>
 	</table>
 </div>
@@ -272,6 +310,7 @@
                                                 <h4 class="modal-title" id="myModalLabel">Save Script</h4>
                                         </div>
                                         <div class="modal-body">
+						<input type="hidden" value="" name="easyccxid" id="easyccxid">
                                                 <div class="form-group">
                                                         <label>Description</label>
                                                         <input type="text" class="form-control" placeholder="Description" value="" name="easyccxdesc" id="easyccxdesc">

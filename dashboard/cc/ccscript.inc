@@ -307,11 +307,15 @@ function hoverEvent(event) {
 		    connectors: JSON.stringify(connectors),
 		    steps: JSON.stringify(steps)
 		},
-		success: function(data){
+		success: function(data) {
+		    //console.log(data);
 		    var jsonData = JSON.parse(data);
 		    if (jsonData.id) {
 			document.getElementById("scriptpkid").value = jsonData.id;
-			//alert("Saved Successfully\n" + jsonData.id);
+			document.getElementById("easyccxid").value = jsonData.id;
+			//$("#easyccxid").val(jsonData.id);
+			document.getElementById("appstatus").innerHTML = "<b>" + jsonData.name + "</b><br>&nbsp;";
+			//alert("Saved Successfully\n" + jsonData.id + "\n" + jsonData.name + "\n" + document.getElementById("appstatus").value);
 			//window.location.replace('./apitask.php?id=' + jsonData.id);
 		    }
 		}
@@ -332,20 +336,53 @@ function hoverEvent(event) {
 				dnm: dnm
 			},
 			success: function(data) {
-				var jsonData = JSON.parse(data);
-				if(jsonData.id) {
-					console.log(jsonData);
-				}
+				//console.log(data);
+				//var jsonData = JSON.parse(data);
+				//var arrLen = jsonData.length;
+				basestr = document.getElementById("appstatus").innerHTML;
+				var basearr = basestr.split("<br>");
+				basestr = basearr[0] + "<br>";
+
+				window.pollingPeriod = 1000;
+				window.progressInterval;
+
+				//for(var i = 0; i < arrLen; i++) {
+				//	var itempkid = jsonData[i];
+					$.getJSON("./cc/checktask.php?list=" + data, function(data) {
+						clearInterval(window.progressInterval);
+						$('#appstatus').html(basestr + data.status);
+					}).error(function(data) {
+						clearInterval(window.progressInterval);
+						$('#appstatus').html(basestr + "Error");
+					});
+
+					window.progressInterval = setInterval(updateProgress,window.pollingPeriod);
+					//console.log(jsonData[i]);
+				//}
 			}
 		});
 	});
 			
+function updateProgress() {
+	$.getJSON('/uploads/progress.json',function(data) {
+		var newpct = data.percentComplete;
+		if(newpct!=1) {
+			var pctout = "Deploying... " + parseInt(newpct*100) + "%";
+			$('#appstatus').html(basestr + pctout);
+		}
+	}).error(function(data) {
+		clearInterval(window.progressInterval);
+		$('#appstatus').html(basestr + "Error.");
+	});
+}
 
 function removeLine(){
     $('#new-link-line').remove();
 }
 
 function endLinkMode() {
+    $('#opoint' + ocounter).attr("id","point" + (ocounter-1));
+    ocounter--;
     $(document).unbind('mousemove.link').unbind('click.link').unbind('keydown.link');
 }
 

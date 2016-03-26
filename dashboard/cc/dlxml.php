@@ -84,6 +84,7 @@ function GetElement($dbt,$dbs,$dbn,$dbu,$dbp,$pkid,$elemstack) {
 				$promptnum = str_replace("clonediv", "", $ename);
 				$enewname = $ename;
 				$hasprompt = 0;
+				$hasqueue = "";
 				$hasvalue = "";
 				switch ($i3) {
 					case "1":
@@ -107,6 +108,10 @@ function GetElement($dbt,$dbs,$dbn,$dbu,$dbp,$pkid,$elemstack) {
 						$itype = "extdial";
 						$hasprompt = 1;
 						break;
+                                        case "6":
+                                                $itype = "acd";
+                                                $hasqueue = $vc2;
+                                                break;
 					default:
 						$itype = "unknown";
 						break;
@@ -116,6 +121,7 @@ function GetElement($dbt,$dbs,$dbn,$dbu,$dbp,$pkid,$elemstack) {
                                 if($itype!="") { $ret .= "    <type>" . $itype . "</type>\r\n"; }
 				if($hasvalue!="") { $ret .= "    <number>" . $hasvalue . "</number>\r\n"; }
                                 if($hasprompt==1) { $ret .= "    <prompt>" . $appname . "/prompt" . $promptnum . ".wav</prompt>\r\n"; }
+				if($hasqueue!="") { $ret .= "    <queue>" . $hasqueue . "</queue>\r\n"; }
 			}
 			if($vc3!="") {
 				$ret .= "    <outputs>\r\n";

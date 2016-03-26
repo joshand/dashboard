@@ -6,11 +6,15 @@ $devpkid = $_POST['did'];
 $scrpkid = $_POST['sid'];
 $devname = $_POST['dnm'];
 
-$res = DeployCCXScript($dbtype,$dbserver,$dbname,$dbun,$dbpw,$devpkid,$devname,$scrpkid);
+$arr_res = DeployCCXScript($dbtype,$dbserver,$dbname,$dbun,$dbpw,$devpkid,$devname,$scrpkid);
 
-echo json_encode(array("status" => $res));
+echo json_encode($arr_res);
 
 function DeployCCXScript($dbt,$dbs,$dbn,$dbu,$dbp,$did,$dnm,$sid) {
+	$arr_tasklist = Array();
+        date_default_timezone_set("America/Chicago");
+        $sqldt = date("Y-m-d H:i:s");
+
 	$conn = do_db_connect($dbt,$dbs,$dbn,$dbu,$dbp);
 	$strSQL = "SELECT * FROM appdata WHERE (pkid = '$sid')";
 	$arr_result = do_db_query($conn,$strSQL,1,$dbt,$dbs,$dbn,$dbu,$dbp);
@@ -61,14 +65,26 @@ function DeployCCXScript($dbt,$dbs,$dbn,$dbu,$dbp,$did,$dnm,$sid) {
 				$pkid = do_db_result($dbt,$result,$y,$pkidval);
 				$fn = do_db_result($dbt,$result,$y,$fileval);
 				$newurl = $fn . "-)" . $url . $pkid;
-				$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status) VALUES ('$newdesc','$apitask','$dirname','$fn','$newurl','$did',1,1)";
+				$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status,dtcreated) VALUES ('$newdesc','$apitask','$dirname','$fn','$newurl','$did',1,1,'$sqldt')";
 				//echo $strSQL;
 				$result2 = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+				$strSQL_ap = "SELECT pkid FROM taskqueue WHERE (dtcreated = '$sqldt') AND (qval3 = '$newurl')";
+				$result_ap = do_db_query($conn,$strSQL_ap,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+				if($result_ap) {
+					$addpkid = do_db_result($dbt,$result_ap,0,"pkid");
+					array_push($arr_tasklist, $addpkid);
+				}
 			}
 		} else {
 			$newurl = $filename . "-)" . $url;
-			$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status) VALUES ('$newdesc','$apitask','$dirname','$filename','$newurl','$did',1,1)";
+			$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status,dtcreated) VALUES ('$newdesc','$apitask','$dirname','$filename','$newurl','$did',1,1,'$sqldt')";
 			$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+			$strSQL_ap = "SELECT pkid FROM taskqueue WHERE (dtcreated = '$sqldt') AND (qval3 = '$newurl')";
+			$result_ap = do_db_query($conn,$strSQL_ap,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+			if($result_ap) {
+				$addpkid = do_db_result($dbt,$result_ap,0,"pkid");
+				array_push($arr_tasklist, $addpkid);
+			}
 		}
 	}
 
@@ -87,11 +103,18 @@ function DeployCCXScript($dbt,$dbs,$dbn,$dbu,$dbp,$did,$dnm,$sid) {
 	$filename = "EasyCCX.aef";
 	$strSQL = "DELETE FROM taskqueue WHERE (fkapitask = '$apitask') AND (fkelement = '$did')";
 	$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
-	$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status) VALUES ('$newdesc','$apitask','$dirname','$filename','$extnum','$did',1,1)";
+	$strSQL = "INSERT INTO taskqueue (description,fkapitask,qval1,qval2,qval3,fkelement,singleuse,status,dtcreated) VALUES ('$newdesc','$apitask','$dirname','$filename','$extnum','$did',1,1,'$sqldt')";
 	$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+
+	$strSQL_ap = "SELECT pkid FROM taskqueue WHERE (dtcreated = '$sqldt') AND (qval3 = '$extnum')";
+	$result_ap = do_db_query($conn,$strSQL_ap,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+	if($result_ap) {
+		$addpkid = do_db_result($dbt,$result_ap,0,"pkid");
+		array_push($arr_tasklist, $addpkid);
+	}
 
 	do_db_close($dbt,$conn);
 
-        return 0;
+        return $arr_tasklist;
 }
 ?>

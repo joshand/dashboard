@@ -9,9 +9,9 @@ $co = json_decode($_POST['connectors'], true);
 $st = json_decode($_POST['steps'], true);
 $appid = "8eb7eba9-ede9-11e5-8dec-02549f4e45a9";
 
-$res = UpdateEasyCCX($dbtype,$dbserver,$dbname,$dbun,$dbpw,$appid,$tenantid,$ei,$ed,$co,$st);
+$arr_res = UpdateEasyCCX($dbtype,$dbserver,$dbname,$dbun,$dbpw,$appid,$tenantid,$ei,$ed,$co,$st);
 
-echo json_encode(array("id" => $res));
+echo json_encode($arr_res);
 
 function UpdateEasyCCX($dbt,$dbs,$dbn,$dbu,$dbp,$appid,$tenantid,$dei,$ded,$dco,$dst) {
         $str_pkid = "";
@@ -20,6 +20,14 @@ function UpdateEasyCCX($dbt,$dbs,$dbn,$dbu,$dbp,$appid,$tenantid,$dei,$ded,$dco,
 	if($ded=="") { $ded = $sqldt; }
 
 	$conn = do_db_connect($dbt,$dbs,$dbn,$dbu,$dbp);
+	if($dei!="") {
+		//want to handle differently
+		$strSQL = "DELETE FROM appdata WHERE (pkid = '$dei') OR (fkxref = '$dei')";
+		$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+		$strSQL = "DELETE FROM apptext WHERE (fkxref = '$dei')";
+		$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
+	}
+
 	$strSQL = "INSERT INTO appdata (fkapp,fktenant,fkxref,vc1,dtcreated) VALUES ('$appid','$tenantid','','$ded','$sqldt')";
 	$result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
 	if($result) {
@@ -35,12 +43,12 @@ function UpdateEasyCCX($dbt,$dbs,$dbn,$dbu,$dbp,$appid,$tenantid,$dei,$ded,$dco,
 		$elemxq = $dst[$x]["elemxq"];
 		$elemyq = $dst[$x]["elemyq"];
 		$elemty = $dst[$x]["elemty"];
-		$elemtx = $dst[$x]["elemtx"];
+		if(isset($dst[$x]["elemtx"])) { $elemtx = $dst[$x]["elemtx"]; } else { $elemtx = ""; }
 
 		$recid = "prompt" . str_replace("clonediv","",$elemid) . ".wav";
 
 		$instype = 0;
-		if(($elemty == "1") || ($elemty == "4")) { $instype = 1; }
+		if(($elemty == "1") || ($elemty == "4") || ($elemty == 6)) { $instype = 1; }
 		if($elemtx == "") { $instype = 1; }
 
 		if($instype == 1) {
@@ -75,6 +83,6 @@ function UpdateEasyCCX($dbt,$dbs,$dbn,$dbu,$dbp,$appid,$tenantid,$dei,$ded,$dco,
         //$arr_result = do_db_query($conn,$strSQL,0,$dbt,$dbs,$dbn,$dbu,$dbp);
         do_db_close($dbt,$conn);
 
-        return $pkid;
+        return Array("id" => $pkid, "name" => $ded);
 }
 ?>
