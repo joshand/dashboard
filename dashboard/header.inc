@@ -9,14 +9,19 @@ if(1==2) {
 	//already authenticated
 	//echo "----------------" . $_SESSION["uid"] . "--";
 } else {
-	$token = $_COOKIE["token"];
-	$sel = substr($token,0,12);
-	$val = substr($token,13,24);
+	if(isset($_COOKIE["token"])) {
+		$token = $_COOKIE["token"];
 
-	$userid = CheckToken($dbtype,$dbserver,$dbname,$dbun,$dbpw,"",$token,$sel,$val);
-	//echo "----------------$token\n<br>----------------$sel--$val--$userid--";
-	if($userid!="0") {
-		$_SESSION["uid"] = $userid;
+		$sel = substr($token,0,12);
+		$val = substr($token,13,24);
+
+		$userid = CheckToken($dbtype,$dbserver,$dbname,$dbun,$dbpw,"",$token,$sel,$val);
+		//echo "----------------$token\n<br>----------------$sel--$val--$userid--";
+		if($userid!="0") {
+			$_SESSION["uid"] = $userid;
+		} else {
+			redirect("./login.php");
+		}
 	} else {
 		redirect("./login.php");
 	}
