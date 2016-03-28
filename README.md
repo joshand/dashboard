@@ -24,18 +24,18 @@ sudo service httpd start<br>
 <br>
 cd /var/www/html<br>
 echo "create database cloudmanage" | mysql -u root<br>
-mysql -u root cloudmanage < cloudmanage.sql<br>
+mysql -u root cloudmanage &lt; cloudmanage.sql<br>
 echo "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('mypassword');" | mysql -u root<br>
 <br>
 cd dashboard<br>
 sudo vi config.inc<br>
 <br>
-Change <PUBLIC_FQDN_OR_IP_ADDRESS> to be the public dns name or IP address of the server. If you are demoing on a private network, you can use an internal IP here as well.<br>
-Change <MYSQL_DB_USERNAME> to root<br>
-Change <MYSQL_DB_PASSWORD> to mypassword<br>
-Change <MYSQL_DB_NAME> to cloudmanage<br>
+Change &lt;PUBLIC_FQDN_OR_IP_ADDRESS&gt; to be the public dns name or IP address of the server. If you are demoing on a private network, you can use an internal IP here as well.<br>
+Change &lt;MYSQL_DB_USERNAME&gt; to root<br>
+Change &lt;MYSQL_DB_PASSWORD&gt; to mypassword<br>
+Change &lt;MYSQL_DB_NAME&gt; to cloudmanage<br>
 <br>
-Access http://<server_ip>/dashboard<br>
+Access http://&lt;server_ip&gt;/dashboard<br>
 Register<br>
 Fill out form, and Register, then Log In.<br>
 
